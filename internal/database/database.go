@@ -8,7 +8,11 @@ import (
 
 	"github.com/jonesrussell/gosources/internal/config"
 	"github.com/jonesrussell/gosources/internal/logger"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" //nolint:blankimports // PostgreSQL driver
+)
+
+const (
+	defaultPingTimeout = 5
 )
 
 type DB struct {
@@ -37,11 +41,11 @@ func New(cfg *config.Config, log logger.Logger) (*DB, error) {
 	db.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime)
 
 	// Test connection
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), defaultPingTimeout*time.Second)
 	defer cancel()
 
-	if err := db.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("ping database: %w", err)
+	if pingErr := db.PingContext(ctx); pingErr != nil {
+		return nil, fmt.Errorf("ping database: %w", pingErr)
 	}
 
 	log.Info("Database connection established",

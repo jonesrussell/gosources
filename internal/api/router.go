@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,27 +19,23 @@ func NewRouter(db *repository.SourceRepository, log logger.Logger) *gin.Engine {
 
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
 	// API v1
 	v1 := router.Group("/api/v1")
-	{
-		sourceHandler := handlers.NewSourceHandler(db, log)
+	sourceHandler := handlers.NewSourceHandler(db, log)
 
-		// Sources endpoints
-		sources := v1.Group("/sources")
-		{
-			sources.POST("", sourceHandler.Create)
-			sources.GET("", sourceHandler.List)
-			sources.GET("/:id", sourceHandler.GetByID)
-			sources.PUT("/:id", sourceHandler.Update)
-			sources.DELETE("/:id", sourceHandler.Delete)
-		}
+	// Sources endpoints
+	sources := v1.Group("/sources")
+	sources.POST("", sourceHandler.Create)
+	sources.GET("", sourceHandler.List)
+	sources.GET("/:id", sourceHandler.GetByID)
+	sources.PUT("/:id", sourceHandler.Update)
+	sources.DELETE("/:id", sourceHandler.Delete)
 
-		// Cities endpoint for gopost integration
-		v1.GET("/cities", sourceHandler.GetCities)
-	}
+	// Cities endpoint for gopost integration
+	v1.GET("/cities", sourceHandler.GetCities)
 
 	return router
 }

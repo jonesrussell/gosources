@@ -31,7 +31,7 @@ func (h *SourceHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if err := h.repo.Create(&source); err != nil {
+	if err := h.repo.Create(c.Request.Context(), &source); err != nil {
 		h.logger.Error("Failed to create source",
 			logger.String("source_name", source.Name),
 			logger.Error(err),
@@ -51,7 +51,7 @@ func (h *SourceHandler) Create(c *gin.Context) {
 func (h *SourceHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
 
-	source, err := h.repo.GetByID(id)
+	source, err := h.repo.GetByID(c.Request.Context(), id)
 	if err != nil {
 		h.logger.Debug("Source not found",
 			logger.String("source_id", id),
@@ -65,7 +65,7 @@ func (h *SourceHandler) GetByID(c *gin.Context) {
 }
 
 func (h *SourceHandler) List(c *gin.Context) {
-	sources, err := h.repo.List()
+	sources, err := h.repo.List(c.Request.Context())
 	if err != nil {
 		h.logger.Error("Failed to list sources",
 			logger.Error(err),
@@ -95,7 +95,7 @@ func (h *SourceHandler) Update(c *gin.Context) {
 
 	source.ID = id
 
-	if err := h.repo.Update(&source); err != nil {
+	if err := h.repo.Update(c.Request.Context(), &source); err != nil {
 		h.logger.Error("Failed to update source",
 			logger.String("source_id", id),
 			logger.Error(err),
@@ -110,7 +110,7 @@ func (h *SourceHandler) Update(c *gin.Context) {
 	)
 
 	// Fetch updated source
-	updated, err := h.repo.GetByID(id)
+	updated, err := h.repo.GetByID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusOK, source)
 		return
@@ -122,7 +122,7 @@ func (h *SourceHandler) Update(c *gin.Context) {
 func (h *SourceHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := h.repo.Delete(id); err != nil {
+	if err := h.repo.Delete(c.Request.Context(), id); err != nil {
 		h.logger.Error("Failed to delete source",
 			logger.String("source_id", id),
 			logger.Error(err),
@@ -139,7 +139,7 @@ func (h *SourceHandler) Delete(c *gin.Context) {
 }
 
 func (h *SourceHandler) GetCities(c *gin.Context) {
-	cities, err := h.repo.GetCities()
+	cities, err := h.repo.GetCities(c.Request.Context())
 	if err != nil {
 		h.logger.Error("Failed to get cities",
 			logger.Error(err),

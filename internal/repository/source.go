@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -23,7 +25,7 @@ func NewSourceRepository(db *sql.DB, log logger.Logger) *SourceRepository {
 	}
 }
 
-func (r *SourceRepository) Create(source *models.Source) error {
+func (r *SourceRepository) Create(ctx context.Context, source *models.Source) error {
 	source.ID = uuid.New().String()
 	source.CreatedAt = time.Now()
 	source.UpdatedAt = time.Now()
@@ -45,7 +47,7 @@ func (r *SourceRepository) Create(source *models.Source) error {
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 	`
 
-	_, err = r.db.Exec(
+	_, err = r.db.ExecContext(ctx,
 		query,
 		source.ID,
 		source.Name,
@@ -70,7 +72,7 @@ func (r *SourceRepository) Create(source *models.Source) error {
 	return nil
 }
 
-func (r *SourceRepository) GetByID(id string) (*models.Source, error) {
+func (r *SourceRepository) GetByID(ctx context.Context, id string) (*models.Source, error) {
 	var source models.Source
 	var selectorsJSON, timeJSON []byte
 	var cityName, groupID sql.NullString
@@ -82,7 +84,7 @@ func (r *SourceRepository) GetByID(id string) (*models.Source, error) {
 		WHERE id = $1
 	`
 
-	err := r.db.QueryRow(query, id).Scan(
+	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&source.ID,
 		&source.Name,
 		&source.URL,
@@ -106,12 +108,12 @@ func (r *SourceRepository) GetByID(id string) (*models.Source, error) {
 		return nil, fmt.Errorf("query source: %w", err)
 	}
 
-	if err := json.Unmarshal(selectorsJSON, &source.Selectors); err != nil {
-		return nil, fmt.Errorf("unmarshal selectors: %w", err)
+	if unmarshalErr := json.Unmarshal(selectorsJSON, &source.Selectors); unmarshalErr != nil {
+		return nil, fmt.Errorf("unmarshal selectors: %w", unmarshalErr)
 	}
 
-	if err := json.Unmarshal(timeJSON, &source.Time); err != nil {
-		return nil, fmt.Errorf("unmarshal time: %w", err)
+	if unmarshalErr := json.Unmarshal(timeJSON, &source.Time); unmarshalErr != nil {
+		return nil, fmt.Errorf("unmarshal time: %w", unmarshalErr)
 	}
 
 	if cityName.Valid {
@@ -124,7 +126,7 @@ func (r *SourceRepository) GetByID(id string) (*models.Source, error) {
 	return &source, nil
 }
 
-func (r *SourceRepository) List() ([]models.Source, error) {
+func (r *SourceRepository) List(ctx context.Context) ([]models.Source, error) {
 	query := `
 		SELECT id, name, url, article_index, page_index, rate_limit, max_depth,
 		       time, selectors, city_name, group_id, enabled, created_at, updated_at
@@ -132,7 +134,7 @@ func (r *SourceRepository) List() ([]models.Source, error) {
 		ORDER BY name
 	`
 
-	rows, err := r.db.Query(query)
+	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("query sources: %w", err)
 	}
@@ -144,7 +146,7 @@ func (r *SourceRepository) List() ([]models.Source, error) {
 		var selectorsJSON, timeJSON []byte
 		var cityName, groupID sql.NullString
 
-		err := rows.Scan(
+		scanErr := rows.Scan(
 			&source.ID,
 			&source.Name,
 			&source.URL,
@@ -160,16 +162,16 @@ func (r *SourceRepository) List() ([]models.Source, error) {
 			&source.CreatedAt,
 			&source.UpdatedAt,
 		)
-		if err != nil {
-			return nil, fmt.Errorf("scan source: %w", err)
+		if scanErr != nil {
+			return nil, fmt.Errorf("scan source: %w", scanErr)
 		}
 
-		if err := json.Unmarshal(selectorsJSON, &source.Selectors); err != nil {
-			return nil, fmt.Errorf("unmarshal selectors: %w", err)
+		if unmarshalErr := json.Unmarshal(selectorsJSON, &source.Selectors); unmarshalErr != nil {
+			return nil, fmt.Errorf("unmarshal selectors: %w", unmarshalErr)
 		}
 
-		if err := json.Unmarshal(timeJSON, &source.Time); err != nil {
-			return nil, fmt.Errorf("unmarshal time: %w", err)
+		if unmarshalErr := json.Unmarshal(timeJSON, &source.Time); unmarshalErr != nil {
+			return nil, fmt.Errorf("unmarshal time: %w", unmarshalErr)
 		}
 
 		if cityName.Valid {
@@ -182,14 +184,14 @@ func (r *SourceRepository) List() ([]models.Source, error) {
 		sources = append(sources, source)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("iterate sources: %w", err)
+	if rowsErr := rows.Err(); rowsErr != nil {
+		return nil, fmt.Errorf("iterate sources: %w", rowsErr)
 	}
 
 	return sources, nil
 }
 
-func (r *SourceRepository) Update(source *models.Source) error {
+func (r *SourceRepository) Update(ctx context.Context, source *models.Source) error {
 	source.UpdatedAt = time.Now()
 
 	selectorsJSON, err := json.Marshal(source.Selectors)
@@ -210,7 +212,7 @@ func (r *SourceRepository) Update(source *models.Source) error {
 		WHERE id = $1
 	`
 
-	result, err := r.db.Exec(
+	result, err := r.db.ExecContext(ctx,
 		query,
 		source.ID,
 		source.Name,
@@ -237,16 +239,16 @@ func (r *SourceRepository) Update(source *models.Source) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("source not found")
+		return errors.New("source not found")
 	}
 
 	return nil
 }
 
-func (r *SourceRepository) Delete(id string) error {
+func (r *SourceRepository) Delete(ctx context.Context, id string) error {
 	query := `DELETE FROM sources WHERE id = $1`
 
-	result, err := r.db.Exec(query, id)
+	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("delete source: %w", err)
 	}
@@ -257,13 +259,13 @@ func (r *SourceRepository) Delete(id string) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("source not found")
+		return errors.New("source not found")
 	}
 
 	return nil
 }
 
-func (r *SourceRepository) GetCities() ([]models.City, error) {
+func (r *SourceRepository) GetCities(ctx context.Context) ([]models.City, error) {
 	query := `
 		SELECT 
 			COALESCE(city_name, name) as city_name,
@@ -274,7 +276,7 @@ func (r *SourceRepository) GetCities() ([]models.City, error) {
 		ORDER BY city_name
 	`
 
-	rows, err := r.db.Query(query)
+	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("query cities: %w", err)
 	}
@@ -285,9 +287,9 @@ func (r *SourceRepository) GetCities() ([]models.City, error) {
 		var city models.City
 		var groupID sql.NullString
 
-		err := rows.Scan(&city.Name, &city.Index, &groupID)
-		if err != nil {
-			return nil, fmt.Errorf("scan city: %w", err)
+		scanErr := rows.Scan(&city.Name, &city.Index, &groupID)
+		if scanErr != nil {
+			return nil, fmt.Errorf("scan city: %w", scanErr)
 		}
 
 		if groupID.Valid && groupID.String != "" {
@@ -297,8 +299,8 @@ func (r *SourceRepository) GetCities() ([]models.City, error) {
 		cities = append(cities, city)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("iterate cities: %w", err)
+	if rowsErr := rows.Err(); rowsErr != nil {
+		return nil, fmt.Errorf("iterate cities: %w", rowsErr)
 	}
 
 	return cities, nil

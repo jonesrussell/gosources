@@ -4,10 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
+)
+
+const (
+	defaultServerPort      = 8080
+	defaultServerTimeout   = 30
+	defaultDatabasePort    = 5432
+	defaultMaxOpenConns    = 25
+	defaultMaxIdleConns    = 5
+	defaultConnMaxLifetime = 5
 )
 
 type Config struct {
@@ -76,33 +86,46 @@ func Load(path string) (*Config, error) {
 		cfg.Server.Port = 8080
 	}
 	if cfg.Server.ReadTimeout == 0 {
-		cfg.Server.ReadTimeout = 30 * time.Second
+		cfg.Server.ReadTimeout = defaultServerTimeout * time.Second
 	}
 	if cfg.Server.WriteTimeout == 0 {
-		cfg.Server.WriteTimeout = 30 * time.Second
+		cfg.Server.WriteTimeout = defaultServerTimeout * time.Second
 	}
 	if cfg.Database.Port == 0 {
-		cfg.Database.Port = 5432
+		cfg.Database.Port = defaultDatabasePort
 	}
 	if cfg.Database.SSLMode == "" {
 		cfg.Database.SSLMode = "disable"
 	}
 	if cfg.Database.MaxOpenConns == 0 {
-		cfg.Database.MaxOpenConns = 25
+		cfg.Database.MaxOpenConns = defaultMaxOpenConns
 	}
 	if cfg.Database.MaxIdleConns == 0 {
-		cfg.Database.MaxIdleConns = 5
+		cfg.Database.MaxIdleConns = defaultMaxIdleConns
 	}
 	if cfg.Database.ConnMaxLifetime == 0 {
-		cfg.Database.ConnMaxLifetime = 5 * time.Minute
+		cfg.Database.ConnMaxLifetime = defaultConnMaxLifetime * time.Minute
 	}
 
 	// Override with environment variables
+	overrideFromEnv(&cfg)
+
+	// Validate configuration
+	if err := cfg.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid config: %w", err)
+	}
+
+	return &cfg, nil
+}
+
+func overrideFromEnv(cfg *Config) {
 	if dbHost := os.Getenv("DB_HOST"); dbHost != "" {
 		cfg.Database.Host = dbHost
 	}
 	if dbPort := os.Getenv("DB_PORT"); dbPort != "" {
-		fmt.Sscanf(dbPort, "%d", &cfg.Database.Port)
+		if port, err := strconv.Atoi(dbPort); err == nil {
+			cfg.Database.Port = port
+		}
 	}
 	if dbUser := os.Getenv("DB_USER"); dbUser != "" {
 		cfg.Database.User = dbUser
@@ -120,17 +143,13 @@ func Load(path string) (*Config, error) {
 		cfg.Server.Host = serverHost
 	}
 	if serverPort := os.Getenv("SERVER_PORT"); serverPort != "" {
-		fmt.Sscanf(serverPort, "%d", &cfg.Server.Port)
+		if port, err := strconv.Atoi(serverPort); err == nil {
+			cfg.Server.Port = port
+		}
 	}
 	if appDebug := os.Getenv("APP_DEBUG"); appDebug != "" {
 		cfg.Debug = parseBool(appDebug)
 	}
-
-	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid config: %w", err)
-	}
-
-	return &cfg, nil
 }
 
 func parseBool(s string) bool {

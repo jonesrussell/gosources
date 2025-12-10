@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"time"
 )
 
@@ -85,16 +86,21 @@ type PageSelectors struct {
 // StringArray is a custom type for PostgreSQL string arrays
 type StringArray []string
 
+var (
+	// ErrEmptyStringArray is returned when trying to value an empty or nil StringArray
+	ErrEmptyStringArray = errors.New("string array is empty or nil")
+)
+
 // Value implements driver.Valuer for database storage
-func (a StringArray) Value() (driver.Value, error) {
-	if len(a) == 0 {
-		return nil, nil
+func (a *StringArray) Value() (driver.Value, error) {
+	if a == nil || len(*a) == 0 {
+		return nil, ErrEmptyStringArray
 	}
-	return json.Marshal(a)
+	return json.Marshal(*a)
 }
 
 // Scan implements sql.Scanner for database retrieval
-func (a *StringArray) Scan(value interface{}) error {
+func (a *StringArray) Scan(value any) error {
 	if value == nil {
 		*a = nil
 		return nil

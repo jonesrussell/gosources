@@ -18,7 +18,8 @@ import (
 )
 
 var (
-	version = "dev"
+	version                = "dev"
+	defaultShutdownTimeout = 10
 )
 
 func main() {
@@ -66,7 +67,7 @@ func main() {
 		os.Exit(1)
 	}
 	defer func() {
-		if err := db.Close(); err != nil {
+		if closeErr := db.Close(); closeErr != nil {
 			appLogger.Error("Failed to close database",
 				logger.Error(err),
 			)
@@ -94,9 +95,9 @@ func main() {
 			logger.Int("port", cfg.Server.Port),
 		)
 
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if serveErr := srv.ListenAndServe(); serveErr != nil && serveErr != http.ErrServerClosed {
 			appLogger.Error("HTTP server failed",
-				logger.Error(err),
+				logger.Error(serveErr),
 			)
 			os.Exit(1)
 		}
@@ -110,12 +111,12 @@ func main() {
 	appLogger.Info("Shutting down server")
 
 	// Graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(defaultShutdownTimeout)*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if shutdownErr := srv.Shutdown(ctx); shutdownErr != nil {
 		appLogger.Error("Server forced to shutdown",
-			logger.Error(err),
+			logger.Error(shutdownErr),
 		)
 	}
 
