@@ -28,7 +28,7 @@ npm install
 npm run dev
 ```
 
-The frontend will run on `http://localhost:3000` and proxy API requests to `http://localhost:8080`.
+The frontend will run on `http://localhost:3000` and proxy API requests to `http://localhost:8050`.
 
 ### Build for Production
 
@@ -43,7 +43,7 @@ Build output will be in the `dist/` directory.
 Create a `.env` file to configure the API URL:
 
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:8050
 ```
 
 ## Project Structure

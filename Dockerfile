@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY --from=builder /build/gosources .
 
-EXPOSE 8080
+EXPOSE 8050
 
 CMD ["./gosources", "-config", "config.yml"]
 

@@ -19,11 +19,11 @@ services:
   gosources:
     build: .
     ports:
-      - "8080:8080"
+      - "8050:8050"
     environment:
       APP_DEBUG: "true"
       SERVER_HOST: "0.0.0.0"
-      SERVER_PORT: "8080"
+      SERVER_PORT: "8050"
       DB_HOST: "postgres"
       DB_PORT: "5432"
       DB_USER: "postgres"

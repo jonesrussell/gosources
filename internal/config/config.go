@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	defaultServerPort      = 8080
+	defaultServerPort      = 8050
 	defaultServerTimeout   = 30
 	defaultDatabasePort    = 5432
 	defaultMaxOpenConns    = 25
@@ -83,7 +83,7 @@ func Load(path string) (*Config, error) {
 		cfg.Server.Host = "0.0.0.0"
 	}
 	if cfg.Server.Port == 0 {
-		cfg.Server.Port = 8080
+		cfg.Server.Port = 8050
 	}
 	if cfg.Server.ReadTimeout == 0 {
 		cfg.Server.ReadTimeout = defaultServerTimeout * time.Second
