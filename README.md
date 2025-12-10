@@ -5,6 +5,7 @@ A microservice for managing content sources configuration with REST API.
 ## Features
 
 - REST API for CRUD operations on sources
+- Global default selectors with source-specific overrides
 - PostgreSQL database storage
 - City mapping for gopost integration
 - Structured logging with zap
@@ -20,6 +21,13 @@ A microservice for managing content sources configuration with REST API.
 - `GET /api/v1/sources/:id` - Get source by ID
 - `PUT /api/v1/sources/:id` - Update a source
 - `DELETE /api/v1/sources/:id` - Delete a source
+
+### Global Selectors
+
+- `GET /api/v1/selectors/global` - Get global default selectors
+- `PUT /api/v1/selectors/global` - Update global default selectors
+
+The global selectors provide default CSS selector configurations that can be used across all sources. When creating or updating a source, set `use_global_selectors: true` to enable merging of global defaults with source-specific selectors. Source-specific selectors always override global defaults.
 
 ### Cities (for gopost integration)
 
@@ -59,19 +67,25 @@ Environment variables override config file values:
 
 ## Database Setup
 
-Run the migration to create the sources table:
+Run the migrations in order to set up the database:
 
 ```bash
 psql -U postgres -d gosources -f migrations/001_create_sources_table.sql
+psql -U postgres -d gosources -f migrations/002_create_global_selectors_table.sql
+psql -U postgres -d gosources -f migrations/003_add_global_selectors_support.sql
 ```
 
 Or using docker:
 
 ```bash
 docker exec -i postgres psql -U postgres -d gosources < migrations/001_create_sources_table.sql
+docker exec -i postgres psql -U postgres -d gosources < migrations/002_create_global_selectors_table.sql
+docker exec -i postgres psql -U postgres -d gosources < migrations/003_add_global_selectors_support.sql
 ```
 
 ## Source JSON Format
+
+### Example with Custom Selectors
 
 ```json
 {
@@ -82,6 +96,7 @@ docker exec -i postgres psql -U postgres -d gosources < migrations/001_create_so
   "rate_limit": "1s",
   "max_depth": 2,
   "time": ["11:45", "23:45"],
+  "use_global_selectors": false,
   "selectors": {
     "article": {
       "container": "article.article-card",
@@ -98,11 +113,37 @@ docker exec -i postgres psql -U postgres -d gosources < migrations/001_create_so
       "title": "h1"
     }
   },
+  "city_name": "sudbury",
+  "group_id": "550e8400-e29b-41d4-a716-446655440000",
+  "enabled": true
+}
+```
+
+### Example Using Global Selectors with Overrides
+
+```json
+{
+  "name": "Sudbury",
+  "url": "https://www.sudbury.com/",
+  "article_index": "sudbury_com_articles",
+  "page_index": "sudbury_com_pages",
+  "rate_limit": "1s",
+  "max_depth": 2,
+  "time": ["11:45", "23:45"],
+  "use_global_selectors": true,
+  "selectors": {
+    "article": {
+      "link": "a.section-item",
+      "title": "h2.title"
+    }
+  },
   "city_name": "sudbury_com",
   "group_id": "550e8400-e29b-41d4-a716-446655440000",
   "enabled": true
 }
 ```
+
+When `use_global_selectors` is `true`, the source will use global defaults for all selectors except those explicitly defined in the `selectors` field. In the example above, only `link` and `title` selectors are customized, while all other selectors (body, image, metadata, etc.) come from the global configuration.
 
 ## Running
 

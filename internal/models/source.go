@@ -9,20 +9,21 @@ import (
 
 // Source represents a content source configuration
 type Source struct {
-	ID           string         `json:"id" db:"id"`
-	Name         string         `json:"name" db:"name"`
-	URL          string         `json:"url" db:"url"`
-	ArticleIndex string         `json:"article_index" db:"article_index"`
-	PageIndex    string         `json:"page_index" db:"page_index"`
-	RateLimit    string         `json:"rate_limit" db:"rate_limit"`
-	MaxDepth     int            `json:"max_depth" db:"max_depth"`
-	Time         StringArray    `json:"time" db:"time"`
-	Selectors    SelectorConfig `json:"selectors" db:"selectors"`
-	CityName     *string        `json:"city_name,omitempty" db:"city_name"` // Optional mapping to gopost city
-	GroupID      *string        `json:"group_id,omitempty" db:"group_id"`   // Optional Drupal group UUID
-	Enabled      bool           `json:"enabled" db:"enabled"`
-	CreatedAt    time.Time      `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at" db:"updated_at"`
+	ID                  string          `json:"id" db:"id"`
+	Name                string          `json:"name" db:"name"`
+	URL                 string          `json:"url" db:"url"`
+	ArticleIndex        string          `json:"article_index" db:"article_index"`
+	PageIndex           string          `json:"page_index" db:"page_index"`
+	RateLimit           string          `json:"rate_limit" db:"rate_limit"`
+	MaxDepth            int             `json:"max_depth" db:"max_depth"`
+	Time                StringArray     `json:"time" db:"time"`
+	Selectors           *SelectorConfig `json:"selectors,omitempty" db:"selectors"` // Optional, can be nil to use only global defaults
+	UseGlobalSelectors  bool            `json:"use_global_selectors" db:"use_global_selectors"`
+	CityName            *string         `json:"city_name,omitempty" db:"city_name"` // Optional mapping to gopost city
+	GroupID             *string         `json:"group_id,omitempty" db:"group_id"`   // Optional Drupal group UUID
+	Enabled             bool            `json:"enabled" db:"enabled"`
+	CreatedAt           time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt           time.Time       `json:"updated_at" db:"updated_at"`
 }
 
 // SelectorConfig represents CSS selector configuration
@@ -112,9 +113,37 @@ func (a *StringArray) Scan(value any) error {
 	return json.Unmarshal(bytes, a)
 }
 
+// GlobalSelectors represents the global default selector configuration
+type GlobalSelectors struct {
+	ID        int            `json:"id" db:"id"`
+	Selectors SelectorConfig `json:"selectors" db:"selectors"`
+	CreatedAt time.Time      `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at" db:"updated_at"`
+}
+
 // City represents a city configuration for gopost
 type City struct {
 	Name    string `json:"name"`
 	Index   string `json:"index"`
 	GroupID string `json:"group_id,omitempty"`
+}
+
+// Value implements driver.Valuer for SelectorConfig database storage
+func (s *SelectorConfig) Value() (driver.Value, error) {
+	if s == nil {
+		return nil, nil
+	}
+	return json.Marshal(s)
+}
+
+// Scan implements sql.Scanner for SelectorConfig database retrieval
+func (s *SelectorConfig) Scan(value any) error {
+	if value == nil {
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("failed to scan SelectorConfig: invalid type")
+	}
+	return json.Unmarshal(bytes, s)
 }

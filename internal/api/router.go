@@ -15,7 +15,11 @@ const (
 	corsMaxAgeHours = 12
 )
 
-func NewRouter(db *repository.SourceRepository, log logger.Logger) *gin.Engine {
+func NewRouter(
+	sourceRepo *repository.SourceRepository,
+	globalSelectorsRepo *repository.GlobalSelectorsRepository,
+	log logger.Logger,
+) *gin.Engine {
 	router := gin.New()
 
 	// CORS middleware - must be first
@@ -43,7 +47,10 @@ func NewRouter(db *repository.SourceRepository, log logger.Logger) *gin.Engine {
 
 	// API v1
 	v1 := router.Group("/api/v1")
-	sourceHandler := handlers.NewSourceHandler(db, log)
+
+	// Initialize handlers
+	sourceHandler := handlers.NewSourceHandler(sourceRepo, log)
+	globalSelectorsHandler := handlers.NewGlobalSelectorsHandler(globalSelectorsRepo, log)
 
 	// Sources endpoints
 	sources := v1.Group("/sources")
@@ -55,6 +62,10 @@ func NewRouter(db *repository.SourceRepository, log logger.Logger) *gin.Engine {
 
 	// Cities endpoint for gopost integration
 	v1.GET("/cities", sourceHandler.GetCities)
+
+	// Global selectors endpoints
+	v1.GET("/selectors/global", globalSelectorsHandler.Get)
+	v1.PUT("/selectors/global", globalSelectorsHandler.Update)
 
 	return router
 }

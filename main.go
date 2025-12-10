@@ -74,11 +74,12 @@ func main() {
 		}
 	}()
 
-	// Initialize repository
+	// Initialize repositories
 	sourceRepo := repository.NewSourceRepository(db.DB(), appLogger)
+	globalSelectorsRepo := repository.NewGlobalSelectorsRepository(db.DB())
 
 	// Initialize router
-	router := api.NewRouter(sourceRepo, appLogger)
+	router := api.NewRouter(sourceRepo, globalSelectorsRepo, appLogger)
 
 	// Create HTTP server
 	srv := &http.Server{
