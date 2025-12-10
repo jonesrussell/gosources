@@ -166,3 +166,27 @@ tasks:
       - task: test
       - task: build
 
+  frontend:install:
+    desc: Install frontend dependencies
+    dir: frontend
+    cmds:
+      - npm install
+
+  frontend:dev:
+    desc: Run frontend development server
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  frontend:build:
+    desc: Build frontend for production
+    dir: frontend
+    cmds:
+      - npm run build
+
+  frontend:preview:
+    desc: Preview production build
+    dir: frontend
+    cmds:
+      - npm run preview
+
