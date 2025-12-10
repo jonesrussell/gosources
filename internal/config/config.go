@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	Debug      bool          `yaml:"debug"`
-	Server     ServerConfig  `yaml:"server"`
-	Database   DatabaseConfig `yaml:"database"`
+	Debug    bool           `yaml:"debug"`
+	Server   ServerConfig   `yaml:"server"`
+	Database DatabaseConfig `yaml:"database"`
 }
 
 type ServerConfig struct {
@@ -24,14 +24,14 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host            string `yaml:"host"`
-	Port            int    `yaml:"port"`
-	User            string `yaml:"user"`
-	Password        string `yaml:"password"`
-	DBName          string `yaml:"dbname"`
-	SSLMode         string `yaml:"sslmode"`
-	MaxOpenConns    int    `yaml:"max_open_conns"`
-	MaxIdleConns    int    `yaml:"max_idle_conns"`
+	Host            string        `yaml:"host"`
+	Port            int           `yaml:"port"`
+	User            string        `yaml:"user"`
+	Password        string        `yaml:"password"`
+	DBName          string        `yaml:"dbname"`
+	SSLMode         string        `yaml:"sslmode"`
+	MaxOpenConns    int           `yaml:"max_open_conns"`
+	MaxIdleConns    int           `yaml:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `yaml:"conn_max_lifetime"`
 }
 
@@ -137,4 +137,3 @@ func parseBool(s string) bool {
 	s = strings.ToLower(strings.TrimSpace(s))
 	return s == "true" || s == "1" || s == "yes"
 }
-
