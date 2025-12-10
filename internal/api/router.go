@@ -11,17 +11,25 @@ import (
 	"github.com/jonesrussell/gosources/internal/repository"
 )
 
+const (
+	corsMaxAgeHours = 12
+)
+
 func NewRouter(db *repository.SourceRepository, log logger.Logger) *gin.Engine {
 	router := gin.New()
 
 	// CORS middleware - must be first
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders: []string{
+			"Origin", "Content-Type", "Content-Length", "Accept-Encoding",
+			"X-CSRF-Token", "Authorization", "accept", "origin",
+			"Cache-Control", "X-Requested-With",
+		},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		MaxAge:           corsMaxAgeHours * time.Hour,
 	}))
 
 	// Middleware
