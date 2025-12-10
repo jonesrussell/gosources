@@ -140,7 +140,7 @@ tasks:
   docker:migrate:
     desc: Run migrations in Docker environment
     cmds:
-      - docker compose -f docker-compose.example.yml exec postgres psql -U postgres -d gosources -f /migrations/001_create_sources_table.sql
+      - docker compose -f docker-compose.example.yml exec -T postgres psql -U postgres -d gosources < migrations/001_create_sources_table.sql
 
   dev:
     desc: Run in development mode with file watching (requires air or similar)
