@@ -22,6 +22,9 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=gosources
       - DB_SSLMODE=disable
+      # Set GOMODCACHE to user-writable location to avoid permission issues
+      - GOMODCACHE=/home/vscode/go/pkg/mod
+      - GOPATH=/home/vscode/go
 
   postgres:
     image: postgres:16-alpine
