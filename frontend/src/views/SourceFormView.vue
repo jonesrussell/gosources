@@ -136,6 +136,423 @@
           </label>
         </div>
 
+        <!-- Article Selectors -->
+        <div class="border-t border-gray-200 pt-6">
+          <button
+            type="button"
+            @click="showArticleSelectors = !showArticleSelectors"
+            class="flex w-full items-center justify-between text-left"
+          >
+            <h3 class="text-lg font-medium text-gray-900">Article Selectors</h3>
+            <svg
+              :class="['h-5 w-5 text-gray-500 transition-transform', showArticleSelectors ? 'rotate-180' : '']"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div v-show="showArticleSelectors" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Container</label>
+              <input
+                v-model="form.selectors.article.container"
+                type="text"
+                placeholder="article, .article-container"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Title</label>
+              <input
+                v-model="form.selectors.article.title"
+                type="text"
+                placeholder="h1, .article-title"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Body</label>
+              <input
+                v-model="form.selectors.article.body"
+                type="text"
+                placeholder=".article-body, .content"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Intro</label>
+              <input
+                v-model="form.selectors.article.intro"
+                type="text"
+                placeholder=".article-intro, .lead"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Link</label>
+              <input
+                v-model="form.selectors.article.link"
+                type="text"
+                placeholder="a.article-link"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Image</label>
+              <input
+                v-model="form.selectors.article.image"
+                type="text"
+                placeholder=".article-image img, figure img"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Byline</label>
+              <input
+                v-model="form.selectors.article.byline"
+                type="text"
+                placeholder=".byline, .author"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Published Time</label>
+              <input
+                v-model="form.selectors.article.published_time"
+                type="text"
+                placeholder="time, .published-date"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Time Ago</label>
+              <input
+                v-model="form.selectors.article.time_ago"
+                type="text"
+                placeholder=".time-ago"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Section</label>
+              <input
+                v-model="form.selectors.article.section"
+                type="text"
+                placeholder=".section, .category"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Category</label>
+              <input
+                v-model="form.selectors.article.category"
+                type="text"
+                placeholder=".category"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Article ID</label>
+              <input
+                v-model="form.selectors.article.article_id"
+                type="text"
+                placeholder="[data-article-id]"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">JSON-LD</label>
+              <input
+                v-model="form.selectors.article.json_ld"
+                type="text"
+                placeholder="script[type='application/ld+json']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Keywords</label>
+              <input
+                v-model="form.selectors.article.keywords"
+                type="text"
+                placeholder="meta[name='keywords']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Description</label>
+              <input
+                v-model="form.selectors.article.description"
+                type="text"
+                placeholder="meta[name='description']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Title</label>
+              <input
+                v-model="form.selectors.article.og_title"
+                type="text"
+                placeholder="meta[property='og:title']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Description</label>
+              <input
+                v-model="form.selectors.article.og_description"
+                type="text"
+                placeholder="meta[property='og:description']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Image</label>
+              <input
+                v-model="form.selectors.article.og_image"
+                type="text"
+                placeholder="meta[property='og:image']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG URL</label>
+              <input
+                v-model="form.selectors.article.og_url"
+                type="text"
+                placeholder="meta[property='og:url']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Type</label>
+              <input
+                v-model="form.selectors.article.og_type"
+                type="text"
+                placeholder="meta[property='og:type']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Site Name</label>
+              <input
+                v-model="form.selectors.article.og_site_name"
+                type="text"
+                placeholder="meta[property='og:site_name']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Canonical</label>
+              <input
+                v-model="form.selectors.article.canonical"
+                type="text"
+                placeholder="link[rel='canonical']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Author</label>
+              <input
+                v-model="form.selectors.article.author"
+                type="text"
+                placeholder=".author-name, [rel='author']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Exclude (comma-separated)</label>
+              <input
+                v-model="articleExcludeInput"
+                type="text"
+                placeholder=".ad, .social-share, .related-articles"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              <p class="mt-1 text-xs text-gray-500">CSS selectors to exclude from article content</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- List Selectors -->
+        <div class="border-t border-gray-200 pt-6">
+          <button
+            type="button"
+            @click="showListSelectors = !showListSelectors"
+            class="flex w-full items-center justify-between text-left"
+          >
+            <h3 class="text-lg font-medium text-gray-900">List Selectors</h3>
+            <svg
+              :class="['h-5 w-5 text-gray-500 transition-transform', showListSelectors ? 'rotate-180' : '']"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div v-show="showListSelectors" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Container</label>
+              <input
+                v-model="form.selectors.list.container"
+                type="text"
+                placeholder=".article-list, .news-list"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Article Cards</label>
+              <input
+                v-model="form.selectors.list.article_cards"
+                type="text"
+                placeholder=".article-card, .news-item"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Article List</label>
+              <input
+                v-model="form.selectors.list.article_list"
+                type="text"
+                placeholder="ul.articles, .article-list"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Exclude From List (comma-separated)</label>
+              <input
+                v-model="listExcludeInput"
+                type="text"
+                placeholder=".sponsored, .ad-card"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              <p class="mt-1 text-xs text-gray-500">CSS selectors to exclude from article lists</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Selectors -->
+        <div class="border-t border-gray-200 pt-6">
+          <button
+            type="button"
+            @click="showPageSelectors = !showPageSelectors"
+            class="flex w-full items-center justify-between text-left"
+          >
+            <h3 class="text-lg font-medium text-gray-900">Page Selectors</h3>
+            <svg
+              :class="['h-5 w-5 text-gray-500 transition-transform', showPageSelectors ? 'rotate-180' : '']"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div v-show="showPageSelectors" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Container</label>
+              <input
+                v-model="form.selectors.page.container"
+                type="text"
+                placeholder="main, .main-content"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Title</label>
+              <input
+                v-model="form.selectors.page.title"
+                type="text"
+                placeholder="h1, .page-title"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Content</label>
+              <input
+                v-model="form.selectors.page.content"
+                type="text"
+                placeholder=".page-content, .content"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Description</label>
+              <input
+                v-model="form.selectors.page.description"
+                type="text"
+                placeholder="meta[name='description']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Keywords</label>
+              <input
+                v-model="form.selectors.page.keywords"
+                type="text"
+                placeholder="meta[name='keywords']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Title</label>
+              <input
+                v-model="form.selectors.page.og_title"
+                type="text"
+                placeholder="meta[property='og:title']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Description</label>
+              <input
+                v-model="form.selectors.page.og_description"
+                type="text"
+                placeholder="meta[property='og:description']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG Image</label>
+              <input
+                v-model="form.selectors.page.og_image"
+                type="text"
+                placeholder="meta[property='og:image']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">OG URL</label>
+              <input
+                v-model="form.selectors.page.og_url"
+                type="text"
+                placeholder="meta[property='og:url']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Canonical</label>
+              <input
+                v-model="form.selectors.page.canonical"
+                type="text"
+                placeholder="link[rel='canonical']"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700">Exclude (comma-separated)</label>
+              <input
+                v-model="pageExcludeInput"
+                type="text"
+                placeholder=".sidebar, .footer, .ad"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              <p class="mt-1 text-xs text-gray-500">CSS selectors to exclude from page content</p>
+            </div>
+          </div>
+        </div>
+
         <div v-if="error" class="rounded-md bg-red-50 p-4">
           <div class="flex">
             <ExclamationCircleIcon class="h-5 w-5 text-red-400" />
@@ -168,7 +585,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { sourcesApi } from '../api/client'
 import { ArrowLeftIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline'
@@ -200,17 +617,63 @@ const loading = ref(false)
 const submitting = ref(false)
 const error = ref(null)
 
+// Collapsible sections state
+const showArticleSelectors = ref(false)
+const showListSelectors = ref(false)
+const showPageSelectors = ref(false)
+
+// Exclude fields as comma-separated strings
+const articleExcludeInput = ref('')
+const listExcludeInput = ref('')
+const pageExcludeInput = ref('')
+
+// Watch exclude inputs and update form data
+watch(articleExcludeInput, (val) => {
+  if (!form.value.selectors.article) form.value.selectors.article = {}
+  form.value.selectors.article.exclude = val ? val.split(',').map(s => s.trim()).filter(Boolean) : []
+})
+
+watch(listExcludeInput, (val) => {
+  if (!form.value.selectors.list) form.value.selectors.list = {}
+  form.value.selectors.list.exclude_from_list = val ? val.split(',').map(s => s.trim()).filter(Boolean) : []
+})
+
+watch(pageExcludeInput, (val) => {
+  if (!form.value.selectors.page) form.value.selectors.page = {}
+  form.value.selectors.page.exclude = val ? val.split(',').map(s => s.trim()).filter(Boolean) : []
+})
+
 const loadSource = async () => {
   if (!isEdit.value) return
-  
+
   loading.value = true
   error.value = null
   try {
     const source = await sourcesApi.get(route.params.id)
+
+    // Ensure selectors exist
+    if (!source.selectors) {
+      source.selectors = { article: {}, list: {}, page: {} }
+    }
+    if (!source.selectors.article) source.selectors.article = {}
+    if (!source.selectors.list) source.selectors.list = {}
+    if (!source.selectors.page) source.selectors.page = {}
+
     form.value = {
       ...source,
       city_name: source.city_name || null,
       group_id: source.group_id || null,
+    }
+
+    // Populate exclude input fields from arrays
+    if (source.selectors.article?.exclude) {
+      articleExcludeInput.value = source.selectors.article.exclude.join(', ')
+    }
+    if (source.selectors.list?.exclude_from_list) {
+      listExcludeInput.value = source.selectors.list.exclude_from_list.join(', ')
+    }
+    if (source.selectors.page?.exclude) {
+      pageExcludeInput.value = source.selectors.page.exclude.join(', ')
     }
   } catch (err) {
     error.value = err.response?.data?.error || err.message || 'Failed to load source'
