@@ -80,10 +80,10 @@ func Load(path string) (*Config, error) {
 
 	// Set defaults
 	if cfg.Server.Host == "" {
-		cfg.Server.Host = "localhost"
+		cfg.Server.Host = "192.168.136.97"
 	}
 	if cfg.Server.Port == 0 {
-		cfg.Server.Port = 8050
+		cfg.Server.Port = defaultServerPort
 	}
 	if cfg.Server.ReadTimeout == 0 {
 		cfg.Server.ReadTimeout = defaultServerTimeout * time.Second

@@ -15,6 +15,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app
 
 COPY --from=builder /build/gosources .
+COPY --from=builder /build/config.yml .
 
 EXPOSE 8050
 

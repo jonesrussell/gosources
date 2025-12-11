@@ -119,17 +119,17 @@ tasks:
   docker:up:
     desc: Start services with Docker Compose
     cmds:
-      - docker compose -f docker-compose.example.yml up -d
+      - docker compose -f docker-compose.yml up -d
 
   docker:down:
     desc: Stop services
     cmds:
-      - docker compose -f docker-compose.example.yml down
+      - docker compose -f docker-compose.yml down
 
   docker:logs:
     desc: View gosources service logs
     cmds:
-      - docker compose -f docker-compose.example.yml logs -f gosources
+      - docker compose -f docker-compose.yml logs -f gosources
 
   docker:restart:
     desc: Restart Docker services
@@ -140,7 +140,7 @@ tasks:
   docker:migrate:
     desc: Run migrations in Docker environment
     cmds:
-      - docker compose -f docker-compose.example.yml exec -T postgres psql -U postgres -d gosources < migrations/001_create_sources_table.sql
+      - docker compose -f docker-compose.yml exec -T postgres psql -U postgres -d gosources < migrations/001_create_sources_table.sql
 
   air:install:
     desc: Install air for hot reloading
