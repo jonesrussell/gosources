@@ -80,7 +80,7 @@ func Load(path string) (*Config, error) {
 
 	// Set defaults
 	if cfg.Server.Host == "" {
-		cfg.Server.Host = "0.0.0.0"
+		cfg.Server.Host = "localhost"
 	}
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 8050
