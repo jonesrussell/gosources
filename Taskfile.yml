@@ -142,16 +142,52 @@ tasks:
     cmds:
       - docker compose -f docker-compose.example.yml exec -T postgres psql -U postgres -d gosources < migrations/001_create_sources_table.sql
 
-  dev:
-    desc: Run in development mode with file watching (requires air or similar)
+  air:install:
+    desc: Install air for hot reloading
     cmds:
       - |
-        if command -v air > /dev/null; then
-          air
+        if ! command -v air > /dev/null; then
+          echo "Installing air..."
+          go install github.com/air-verse/air@latest
+          echo "✓ air installed successfully"
         else
-          echo "air not installed. Install with: go install github.com/cosmtrek/air@latest"
-          task: run
+          echo "✓ air is already installed"
         fi
+    status:
+      - command -v air > /dev/null
+
+  dev:
+    desc: Run backend in development mode with hot reloading
+    deps: [air:install]
+    cmds:
+      - air -c .air.toml
+
+  dev:backend:
+    desc: Run backend in development mode with hot reloading (alias for dev)
+    deps: [air:install]
+    cmds:
+      - air -c .air.toml
+
+  dev:all:
+    desc: Run both backend and frontend in development mode
+    deps: [air:install, frontend:install]
+    cmds:
+      - |
+        echo "Starting backend and frontend in development mode..."
+        echo "Backend will run on http://localhost:8050"
+        echo "Frontend will run on http://localhost:3000"
+        echo ""
+        # Run both in background, then wait
+        air -c .air.toml &
+        BACKEND_PID=$!
+        cd frontend && npm run dev &
+        FRONTEND_PID=$!
+
+        # Trap to kill both processes on exit
+        trap "kill $BACKEND_PID $FRONTEND_PID 2>/dev/null" EXIT
+
+        # Wait for both processes
+        wait
 
   install:
     desc: Install the binary to $GOPATH/bin

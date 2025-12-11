@@ -38,8 +38,12 @@ config.yml
 dist/
 build/
 bin/
+tmp/
 
 # Coverage files
 coverage.out
 coverage.html
 config.yml
+
+# Air hot reload
+build-errors.log
